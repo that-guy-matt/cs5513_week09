@@ -1,6 +1,8 @@
 {
   "projects": {
-    "friendlyeats-codelab": "friendlyeats-codelab-68c10"
+    "friendlyeats-codelab": "friendlyeats-codelab-68c10",
+    "book-reviews": "book-reviews-ae8bc",
+    "staging": "book-reviews-ae8bc"
   },
   "targets": {},
   "etags": {}
