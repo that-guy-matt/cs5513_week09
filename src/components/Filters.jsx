@@ -1,4 +1,4 @@
-// The filters shown on the restaurant listings page
+// The filters shown on the book listings page
 
 import Tag from "@/src/components/Tag.jsx";
 
@@ -38,7 +38,7 @@ export default function Filters({ filters, setFilters }) {
         <summary>
           <img src="/filter.svg" alt="filter" />
           <div>
-            <p>Restaurants</p>
+            <p>Books</p>
             <p>Sorted by {filters.sort || "Rating"}</p>
           </div>
         </summary>
@@ -51,48 +51,68 @@ export default function Filters({ filters, setFilters }) {
           }}
         >
           <FilterSelect
-            label="Category"
+            label="Genre"
             options={[
               "",
-              "Italian",
-              "Chinese",
-              "Japanese",
-              "Mexican",
-              "Indian",
-              "Mediterranean",
-              "Caribbean",
-              "Cajun",
-              "German",
-              "Russian",
-              "Cuban",
-              "Organic",
-              "Tapas",
+              "Fiction",
+              "Non-Fiction",
+              "Mystery",
+              "Romance",
+              "Science Fiction",
+              "Fantasy",
+              "Biography",
+              "History",
+              "Self-Help",
+              "Thriller",
             ]}
-            value={filters.category}
-            onChange={(event) => handleSelectionChange(event, "category")}
-            name="category"
+            value={filters.genre}
+            onChange={(event) => handleSelectionChange(event, "genre")}
+            name="genre"
             icon="/food.svg"
           />
 
           <FilterSelect
-            label="City"
+            label="Author"
             options={[
               "",
-              "New York",
-              "Los Angeles",
-              "London",
-              "Paris",
-              "Tokyo",
-              "Mumbai",
-              "Dubai",
-              "Amsterdam",
-              "Seoul",
-              "Singapore",
-              "Istanbul",
+              "Sarah Mitchell",
+              "James Chen",
+              "Emily Rodriguez",
+              "Michael Thompson",
+              "Rachel Anderson",
+              "David Kim",
+              "Lisa Park",
+              "Christopher Brown",
+              "Jessica Taylor",
+              "Daniel Wilson",
+              "Amanda Lee",
+              "Robert Martinez",
             ]}
-            value={filters.city}
-            onChange={(event) => handleSelectionChange(event, "city")}
-            name="city"
+            value={filters.author}
+            onChange={(event) => handleSelectionChange(event, "author")}
+            name="author"
+            icon="/location.svg"
+          />
+
+          <FilterSelect
+            label="Publication Year"
+            options={[
+              "",
+              "2015",
+              "2016",
+              "2017",
+              "2018",
+              "2019",
+              "2020",
+              "2021",
+              "2022",
+              "2023",
+              "2024",
+              "2025",
+            ]}
+            value={filters.publicationYear}
+            onChange={(event) => handleSelectionChange(event, "publicationYear")}
+            name="publicationYear"
             icon="/location.svg"
           />
 
@@ -121,8 +141,9 @@ export default function Filters({ filters, setFilters }) {
                 type="reset"
                 onClick={() => {
                   setFilters({
-                    city: "",
-                    category: "",
+                    author: "",
+                    genre: "",
+                    publicationYear: "",
                     price: "",
                     sort: "",
                   });

@@ -64,7 +64,7 @@ const ReviewDialog = ({
           </p>
 
           {/* Hidden fields to include necessary metadata for the server action */}
-          <input type="hidden" name="restaurantId" value={id} />
+          <input type="hidden" name="bookId" value={id} />
           <input type="hidden" name="userId" value={userId} />
         </article>
         <footer>

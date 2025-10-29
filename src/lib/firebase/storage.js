@@ -4,15 +4,15 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "@/src/lib/firebase/clientApp"; 
 // Import the configured Firebase storage instance
 
-import { updateRestaurantImageReference } from "@/src/lib/firebase/firestore"; 
-// Import helper to update the restaurant document in Firestore with the new image URL
+import { updateBookImageReference } from "@/src/lib/firebase/firestore"; 
+// Import helper to update the book document in Firestore with the new image URL
 
-// Main function to update a restaurant's image
-export async function updateRestaurantImage(restaurantId, image) {
+// Main function to update a book's image
+export async function updateBookImage(bookId, image) {
     try {
-        // Validate that a restaurant ID is provided
-        if (!restaurantId) {
-            throw new Error("No restaurant ID has been provided");
+        // Validate that a book ID is provided
+        if (!bookId) {
+            throw new Error("No book ID has been provided");
         }
 
         // Validate that a valid image object is provided
@@ -21,10 +21,10 @@ export async function updateRestaurantImage(restaurantId, image) {
         }
 
         // Upload the image to Firebase Storage and get its public URL
-        const publicImageUrl = await uploadImage(restaurantId, image);
+        const publicImageUrl = await uploadImage(bookId, image);
 
-        // Update the restaurant document in Firestore with the new image URL
-        await updateRestaurantImageReference(restaurantId, publicImageUrl);
+        // Update the book document in Firestore with the new image URL
+        await updateBookImageReference(bookId, publicImageUrl);
 
         // Return the public URL of the uploaded image
         return publicImageUrl;
@@ -35,8 +35,8 @@ export async function updateRestaurantImage(restaurantId, image) {
 }
 
 // Helper function to upload an image to Firebase Storage
-async function uploadImage(restaurantId, image) {
-    const filePath = `images/${restaurantId}/${image.name}`; 
+async function uploadImage(bookId, image) {
+    const filePath = `images/${bookId}/${image.name}`; 
     // Define the path in Firebase Storage where the image will be stored
 
     const newImageRef = ref(storage, filePath); 

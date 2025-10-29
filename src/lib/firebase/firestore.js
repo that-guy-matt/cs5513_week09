@@ -1,4 +1,4 @@
-import { generateFakeRestaurantsAndReviews } from "@/src/lib/fakeRestaurants.js";
+import { generateFakeBooksAndReviews } from "@/src/lib/fakeBooks.js";
 
 // Import Firestore functions for CRUD operations, queries, transactions, and timestamps
 import {
@@ -18,39 +18,40 @@ import {
 } from "firebase/firestore";
 
 import { db } from "@/src/lib/firebase/clientApp"; // Firebase client instance
-import { ErrorBoundaryHandler } from "next/dist/client/components/error-boundary"; // unused import
 
-// Updates the photo URL of a restaurant document
-export async function updateRestaurantImageReference(
-  restaurantId,
+// Updates the photo URL of a book document
+export async function updateBookImageReference(
+  bookId,
   publicImageUrl
 ) {
-  const restaurantRef = doc(collection(db, "restaurants"), restaurantId); // reference to restaurant
-  if (restaurantRef) {
-    await updateDoc(restaurantRef, { photo: publicImageUrl }); // update the photo field
+  const bookRef = doc(collection(db, "books"), bookId); // reference to book
+  if (bookRef) {
+    await updateDoc(bookRef, { photo: publicImageUrl }); // update the photo field
   }
 }
 
 // Helper function for transactional rating update
 const updateWithRating = async (
   transaction,
-  docRef,          // reference to restaurant document
+  docRef,          // reference to book document
   newRatingDocument, // reference for new rating subdocument
   review            // new review object
 ) => {
-  const restaurant = await transaction.get(docRef); // get restaurant snapshot
-  const data = restaurant.data(); // current restaurant data
+  const book = await transaction.get(docRef); // get book snapshot
+  const data = book.data(); // current book data
 
   // calculate new totals
   const newNumRatings = data?.numRatings ? data.numRatings + 1 : 1;
   const newSumRating = (data?.sumRating || 0) + Number(review.rating);
   const newAverage = newSumRating / newNumRatings;
 
-  // update restaurant aggregate fields
+  // update book aggregate fields
   transaction.update(docRef, {
     numRatings: newNumRatings,
     sumRating: newSumRating,
     avgRating: newAverage,
+    // add new field for userid making review to use as security check
+    lastReviewUserId: review.userId,
   });
 
   // create new rating subdocument
@@ -60,10 +61,10 @@ const updateWithRating = async (
   });
 };
 
-// Adds a review to a restaurant, wrapped in a Firestore transaction
-export async function addReviewToRestaurant(db, restaurantId, review) {
-  if (!restaurantId) {
-    throw new Error("No restaurant ID has been provided."); // validation
+// Adds a review to a book, wrapped in a Firestore transaction
+export async function addReviewToBook(db, bookId, review) {
+  if (!bookId) {
+    throw new Error("No book ID has been provided."); // validation
   }
 
   if (!review) {
@@ -71,28 +72,31 @@ export async function addReviewToRestaurant(db, restaurantId, review) {
   }
 
   try {
-    const docRef = doc(collection(db, "restaurants"), restaurantId); // restaurant doc reference
+    const docRef = doc(collection(db, "books"), bookId); // book doc reference
     const newRatingDocument = doc(
-      collection(db, `restaurants/${restaurantId}/ratings`) // new rating subdoc reference
+      collection(db, `books/${bookId}/ratings`) // new rating subdoc reference
     );
 
-    // Run transaction to update restaurant rating and create new rating
+    // Run transaction to update book rating and create new rating
     await runTransaction(db, transaction =>
       updateWithRating(transaction, docRef, newRatingDocument, review)
     );
   } catch (error) {
-    console.error("There was an error adding the rating to the restaurant", error);
+    console.error("There was an error adding the rating to the book", error);
     throw error;
   }
 };
 
-// Apply query filters for restaurant fetching
-function applyQueryFilters(q, { category, city, price, sort }) {
-  if (category) {
-    q = query(q, where("category", "==", category)); // filter by category
+// Apply query filters for book fetching
+function applyQueryFilters(q, { genre, author, publicationYear, price, sort }) {
+  if (genre) {
+    q = query(q, where("genre", "==", genre)); // filter by genre
   }
-  if (city) {
-    q = query(q, where("city", "==", city)); // filter by city
+  if (author) {
+    q = query(q, where("author", "==", author)); // filter by author
+  }
+  if (publicationYear) {
+    q = query(q, where("publicationYear", "==", publicationYear)); // filter by publication year
   }
   if (price) {
     q = query(q, where("price", "==", price.length)); // filter by price
@@ -106,9 +110,9 @@ function applyQueryFilters(q, { category, city, price, sort }) {
   return q;
 }
 
-// Fetches restaurants with optional filters
-export async function getRestaurants(db = db, filters = {}) {
-  let q = query(collection(db, "restaurants")); // base query
+// Fetches books with optional filters
+export async function getBooks(db = db, filters = {}) {
+  let q = query(collection(db, "books")); // base query
   q = applyQueryFilters(q, filters);           // apply filters
   const results = await getDocs(q);            // execute query
   return results.docs.map((doc) => {
@@ -121,14 +125,14 @@ export async function getRestaurants(db = db, filters = {}) {
   });
 }
 
-// Listen for real-time updates to restaurants collection
-export function getRestaurantsSnapshot(cb, filters = {}) {
+// Listen for real-time updates to books collection
+export function getBooksSnapshot(cb, filters = {}) {
   if (typeof cb !== "function") {
     console.log("Error: The callback parameter is not a function");
     return;
   }
 
-  let q = query(collection(db, "restaurants"));
+  let q = query(collection(db, "books"));
   q = applyQueryFilters(q, filters);
 
   // Subscribe to real-time updates
@@ -145,13 +149,13 @@ export function getRestaurantsSnapshot(cb, filters = {}) {
   })
 }
 
-// Fetch single restaurant by ID
-export async function getRestaurantById(db, restaurantId) {
-  if (!restaurantId) {
-    console.log("Error: Invalid ID received: ", restaurantId);
+// Fetch single book by ID
+export async function getBookById(db, bookId) {
+  if (!bookId) {
+    console.log("Error: Invalid ID received: ", bookId);
     return;
   }
-  const docRef = doc(db, "restaurants", restaurantId);
+  const docRef = doc(db, "books", bookId);
   const docSnap = await getDoc(docRef); // get document snapshot
   return {
     ...docSnap.data(),
@@ -159,20 +163,20 @@ export async function getRestaurantById(db, restaurantId) {
   };
 }
 
-// Placeholder for snapshot of single restaurant (not implemented)
-export function getRestaurantSnapshotById(restaurantId, cb) {
+// Placeholder for snapshot of single book (not implemented)
+export function getBookSnapshotById(bookId, cb) {
   return;
 }
 
-// Fetch reviews for a given restaurant
-export async function getReviewsByRestaurantId(db, restaurantId) {
-  if (!restaurantId) {
-    console.log("Error: Invalid restaurantId received: ", restaurantId);
+// Fetch reviews for a given book
+export async function getReviewsByBookId(db, bookId) {
+  if (!bookId) {
+    console.log("Error: Invalid bookId received: ", bookId);
     return;
   }
 
   const q = query(
-    collection(db, "restaurants", restaurantId, "ratings"), // ratings subcollection
+    collection(db, "books", bookId, "ratings"), // ratings subcollection
     orderBy("timestamp", "desc") // order by newest first
   );
 
@@ -186,15 +190,15 @@ export async function getReviewsByRestaurantId(db, restaurantId) {
   });
 }
 
-// Listen for real-time updates to restaurant ratings
-export function getReviewsSnapshotByRestaurantId(restaurantId, cb) {
-  if (!restaurantId) {
-    console.log("Error: Invalid restaurantId received: ", restaurantId);
+// Listen for real-time updates to book ratings
+export function getReviewsSnapshotByBookId(bookId, cb) {
+  if (!bookId) {
+    console.log("Error: Invalid bookId received: ", bookId);
     return;
   }
 
   const q = query(
-    collection(db, "restaurants", restaurantId, "ratings"),
+    collection(db, "books", bookId, "ratings"),
     orderBy("timestamp", "desc")
   );
   return onSnapshot(q, (querySnapshot) => {
@@ -209,20 +213,20 @@ export function getReviewsSnapshotByRestaurantId(restaurantId, cb) {
   });
 }
 
-// Add fake restaurants and associated reviews to Firestore
-export async function addFakeRestaurantsAndReviews() {
-  const data = await generateFakeRestaurantsAndReviews(); // generate fake data
-  for (const { restaurantData, ratingsData } of data) {
+// Add fake books and associated reviews to Firestore
+export async function addFakeBooksAndReviews() {
+  const data = await generateFakeBooksAndReviews(); // generate fake data
+  for (const { bookData, ratingsData } of data) {
     try {
       const docRef = await addDoc(
-        collection(db, "restaurants"), // add restaurant
-        restaurantData
+        collection(db, "books"), // add book
+        bookData
       );
 
-      // add each rating to the restaurant's ratings subcollection
+      // add each rating to the book's ratings subcollection
       for (const ratingData of ratingsData) {
         await addDoc(
-          collection(db, "restaurants", docRef.id, "ratings"),
+          collection(db, "books", docRef.id, "ratings"),
           ratingData
         );
       }
