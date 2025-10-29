@@ -55,8 +55,8 @@ dialog {
   }
 
   &::backdrop {
-    background-color: #f6f7f9;
-    opacity: 0.8;
+    background-color: rgb(94 75 56);
+    opacity: 0.7;
   }
 }
 
@@ -83,9 +83,13 @@ footer {
   }
 
   & .button--confirm {
-    background-color: rgb(255 111 0);
+    background-color: rgb(139 107 76);
     color: white;
     border-radius: 3px;
+  }
+  
+  & .button--confirm:hover {
+    background-color: rgb(120 90 63);
   }
 
   & menu {
@@ -97,7 +101,7 @@ footer {
 }
 
 header {
-  background-color: rgb(56 85 116);
+  background-color: rgb(94 75 56);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -150,13 +154,13 @@ header {
 .menu ul {
   /* display: block; */
   left: calc(-220px * 0.9);
-  color: rgb(42 72 101);
-  background-color: white;
+  color: rgb(94 75 56);
+  background-color: rgb(253 250 245);
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 50%);
 
   & li {
     padding: 10px;
-    border-bottom: 1px solid rgb(42 72 101 / 0.25);
+    border-bottom: 1px solid rgb(94 75 56 / 0.25);
   }
 
   & a {
@@ -165,7 +169,7 @@ header {
   }
 
   & li:has(a):hover {
-    background-color: rgb(42 72 101 / 0.05);
+    background-color: rgb(248 240 229);
   }
 
   & a:visited {
@@ -194,18 +198,19 @@ header {
 }
 
 .main__home {
-  background-color: rgb(178 193 212);
+  background-color: rgb(240 234 224);
   min-height: 100vh;
 }
 
-.main__restaurant {
-  background-color: rgb(229 234 240);
+.main__restaurant,
+.main__book {
+  background-color: rgb(253 250 245);
   min-height: 90vh;
 }
 
 article {
   margin: 0 auto;
-  background-color: rgb(229 234 240);
+  background-color: rgb(253 250 245);
   padding: 20px 40px;
 }
 
@@ -221,8 +226,14 @@ article {
   gap: 40px;
 
   & li {
-    background: white;
+    background: rgb(255 252 247);
     max-width: 300px;
+    box-shadow: 0 2px 8px rgba(94, 75, 56, 0.1);
+    transition: box-shadow 0.2s ease;
+  }
+  
+  & li:hover {
+    box-shadow: 0 4px 12px rgba(94, 75, 56, 0.2);
   }
 
   & a {
@@ -281,11 +292,11 @@ a {
   & svg {
     width: 2rem;
     height: 2rem;
-    color: rgb(255 202 40);
+    color: rgb(217 180 122);
   }
 
   & span {
-    color: rgb(156 163 175);
+    color: rgb(139 107 76);
   }
 }
 
@@ -320,15 +331,11 @@ a {
 }
 
 .details__container {
-  --tw-gradient-from: #c60094 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(56 85 116 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-  background-image: linear-gradient(to top right, var(--tw-gradient-stops));
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgb(24 25 26 / 50%);
+  background: linear-gradient(to top, rgba(94, 75, 56, 0.85), rgba(94, 75, 56, 0.3));
   width: 100%;
   height: 100%;
 }
@@ -363,11 +370,15 @@ a {
     --tw-shadow:
       0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     cursor: pointer;
-    background-color: rgb(255 202 40);
+    background-color: rgb(192 161 123);
     border-radius: 0.75rem;
     box-shadow:
       var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
       var(--tw-shadow);
+  }
+  
+  .review:hover {
+    background-color: rgb(177 148 112);
   }
 
   .add {
@@ -379,10 +390,14 @@ a {
     box-shadow:
       var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
       var(--tw-shadow);
-    background-color: rgb(255 143 0);
+    background-color: rgb(139 107 76);
     border-radius: 9999px;
     cursor: pointer;
     height: 4rem;
+  }
+  
+  .add:hover {
+    background-color: rgb(120 90 63);
   }
 
   .add input {
@@ -398,8 +413,14 @@ a {
   padding: 20px;
   font-size: 17px;
   border: none;
-  border-bottom: 2px solid rgb(255 111 0);
+  border-bottom: 2px solid rgb(139 107 76);
   width: 100%;
+  background-color: rgb(255 252 247);
+}
+
+#review:focus {
+  outline: none;
+  border-bottom-color: rgb(94 75 56);
 }
 
 /* Thanks to: https://codepen.io/chris22smith/pen/MJzLJN */
@@ -479,9 +500,9 @@ a {
 }
 
 .filter-menu {
-  background-color: white;
+  background-color: rgb(255 252 247);
   border-radius: 3px;
-  border-bottom: 1px solid rgb(27 58 87);
+  border-bottom: 1px solid rgb(94 75 56);
 
   & summary {
     font-weight: bold;
@@ -529,7 +550,13 @@ a {
     border: 0;
     border-bottom-width: 2px;
     border-style: solid;
-    border-color: #e5e7eb;
+    border-color: rgb(228 217 203);
+    background-color: transparent;
+  }
+  
+  & select:focus {
+    outline: none;
+    border-bottom-color: rgb(139 107 76);
   }
 
   & p:first-child {
@@ -540,7 +567,7 @@ a {
   }
 
   & p:last-child {
-    color: rgb(42 72 101);
+    color: rgb(94 75 56);
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -564,10 +591,14 @@ a {
     padding-bottom: 0.25rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    background-color: rgb(71 98 130);
+    background-color: rgb(139 107 76);
     border-radius: 9999px;
     color: white;
     font-size: 0.95rem;
+  }
+  
+  & span:hover {
+    background-color: rgb(120 90 63);
   }
 
   & button {
